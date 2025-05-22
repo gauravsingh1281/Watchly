@@ -17,8 +17,9 @@ export default function App() {
   const [searchTerm, setSearchTerm] = useState("");
   const [errMsg, setErrMsg] = useState("");
   const [movieList, setMovieList] = useState([]);
-  const [trendingMovies, setTrendingMovies] = useState([]);
   const [isloading, setIsloading] = useState(false);
+  const [trendingMovies, setTrendingMovies] = useState([]);
+  const [trendingMovieErrMsg, setTrendingMovieErrMsg] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   useDebounce(() => setDebouncedSearchTerm(searchTerm), 500, [searchTerm]);
   const fetchMovies = async (query = "") => {
@@ -51,11 +52,18 @@ export default function App() {
   };
 
   const loadTrendingMovies = async () => {
+    setIsloading(true);
+    setTrendingMovieErrMsg("");
     try {
       const movies = await getTrendingMovies();
       setTrendingMovies(movies);
     } catch (error) {
       console.error(`Error fetching trending movies:${error}`);
+      setTrendingMovieErrMsg(
+        "Error fetching trending movies. Please try again later."
+      );
+    } finally {
+      setIsloading(false);
     }
   };
   useEffect(() => {
@@ -69,7 +77,12 @@ export default function App() {
   return (
     <main>
       <div className="pattern" />
-      <div className="wrapper">
+      <div className="wrapper relative">
+        <img
+          className="w-[90.41px] h-[66px] mx-auto my-10"
+          src="./logo.png"
+          alt="logo"
+        />
         <header>
           <img src="./hero.png" alt="hero-banner" />
           <h1>
@@ -81,18 +94,24 @@ export default function App() {
         {trendingMovies.length > 0 && (
           <section className="trending">
             <h2>Trending Movies</h2>
-            <ul>
-              {trendingMovies.map((movie, index) => (
-                <li key={movie.$id}>
-                  <p>{index + 1}</p>
-                  <img src={movie.poster_url} alt={movie.title} />
-                </li>
-              ))}
-            </ul>
+            {isloading ? (
+              <Spinner />
+            ) : trendingMovieErrMsg ? (
+              <p className="text-red-500">{trendingMovieErrMsg}</p>
+            ) : (
+              <ul>
+                {trendingMovies.map((movie, index) => (
+                  <li key={movie.$id}>
+                    <p>{index + 1}</p>
+                    <img src={movie.poster_url} alt={movie.title} />
+                  </li>
+                ))}
+              </ul>
+            )}
           </section>
         )}
         <section className="all-movies">
-          <h2>All Movies</h2>
+          <h2>Popular</h2>
           {isloading ? (
             <Spinner />
           ) : errMsg ? (
