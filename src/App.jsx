@@ -38,7 +38,7 @@ export default function App() {
         return;
       }
       setMovieList(data.results || []);
-      if (query && data.results > 0) {
+      if (query && data.results.length > 0) {
         await updateSearchCount(query, data.results[0]);
       }
     } catch (error) {
