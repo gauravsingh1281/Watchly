@@ -73,7 +73,7 @@
         }
 
         & ul li img {
-            @apply w-[127px] h-[163px] rounded-lg object-cover -ml-3.5;
+            @apply w-[140px] h-[200px] rounded-lg object-cover ml-3.5;
         }
     }
 
